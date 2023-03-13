@@ -72,7 +72,8 @@ def handleLogin():
 @app.route('/profile')
 def profile():
     if ('username' in session):
-        return render_template('profile.html')
+        user_list = User.query.all()
+        return render_template('profile.html',users=user_list)
     else:
         return render_template('login.html',message="Hey you are not allowed here, you need to login!")
 
@@ -82,5 +83,24 @@ def logout():
     return redirect(url_for('loginPage'))
 
 
+@app.route('/signup', methods=['GET', 'POST'])
+def signup():
+    if request.method == 'POST':
+        # retrieve the user's input from the form
+        username = request.form['username']
+        password = request.form['password']
+        # create a new User object and add it to the database
+        user = User(username= username, password=password)
+        db.session.add(user)
+        db.session.commit()
+        
+        return render_template('login.html')
+
+    else:
+        # render the signup form template
+        return render_template('signup.html')
+
+
 if __name__ == "__main__":
     app.run(debug=True,)
+
